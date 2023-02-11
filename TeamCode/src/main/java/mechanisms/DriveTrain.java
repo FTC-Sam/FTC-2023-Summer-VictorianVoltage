@@ -10,7 +10,7 @@ import ftc.rogue.blacksmith.listeners.ReforgedGamepad;
 
 public class DriveTrain {
 
-    private DcMotorEx motorFrontLeft, motorBackLeft, motorFrontRight, motorBackRight;
+    private final DcMotorEx motorFrontLeft, motorBackLeft, motorFrontRight, motorBackRight;
 
 
 
