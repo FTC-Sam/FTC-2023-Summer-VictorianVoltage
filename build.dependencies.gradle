@@ -5,6 +5,9 @@ repositories {
     flatDir {
         dirs rootProject.file('libs')
     }
+
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://maven.brott.dev/' }
 }
 
 dependencies {
@@ -21,4 +24,6 @@ dependencies {
     implementation 'org.firstinspires.ftc:gameAssets-PowerPlay:1.0.0'
 
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.8'
+
+    implementation 'com.github.RR-9527:robot-code-v2:0.2'
 }
