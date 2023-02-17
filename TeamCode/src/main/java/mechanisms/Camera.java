@@ -35,7 +35,7 @@ public class Camera {
             }
         });
 
-    }
+    }//could later try to put this into every inner class instead of up here to avoid confusion or if this just straight up not work
 
 
 
