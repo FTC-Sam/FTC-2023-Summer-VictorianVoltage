@@ -17,53 +17,43 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 
 public class Camera {
-    private final OpenCvCamera camera;
-    public Camera(OpenCvPipeline pipeline) {
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
-        //could potentially look at createInternalCamera
-        camera.setPipeline(pipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.startStreaming(480, 360, OpenCvCameraRotation.SIDEWAYS_LEFT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-                throw new RuntimeException("Error opening camera! Error code " + errorCode);
-            }
-        });
-
-    }//could later try to put this into every inner class instead of up here to avoid confusion or if this just straight up not work
-
-
-
-
-
-
-
     public static class BlueConeDetector extends OpenCvPipeline {
         Mat mat = new Mat(); // matrix
-
         final Rect LEFT_ROI = new Rect(
                 new Point(60, 35),
                 new Point(120, 75)); //takes the top left point and bottom right point
-
         final Rect RIGHT_ROI = new Rect(
                 new Point(140, 35),
                 new Point(200, 75));
-
         final double PERCENT_COLOR_THRESHOLD = 0.4; // unlike the HSV which determines what is considered our desired color, this decides if we have enough in the frame to actually perform an action
-
         public enum DETECTION_STATE {
             BOTH,
             LEFT,
             RIGHT,
             NOTFOUND
         }
-
         private DETECTION_STATE detection_state;
+
+
+        private OpenCvCamera camera;
+        public void runPipeline() {
+            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
+            //could potentially look at createInternalCamera
+            camera.setPipeline(this);
+            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                @Override
+                public void onOpened() {
+                    camera.startStreaming(480, 360, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                }
+
+                @Override
+                public void onError(int errorCode) {
+                    throw new RuntimeException("Error opening camera! Error code " + errorCode);
+                }
+            });
+        }
+
 
         @Override
         public Mat processFrame(Mat input) {
