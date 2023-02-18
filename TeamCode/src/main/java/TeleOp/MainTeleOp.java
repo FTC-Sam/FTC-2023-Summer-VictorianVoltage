@@ -1,6 +1,14 @@
 package TeleOp;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import ftc.rogue.blacksmith.BlackOp;
 import ftc.rogue.blacksmith.Scheduler;
@@ -10,7 +18,7 @@ import mechanisms.Camera;
 import mechanisms.DriveTrain;
 
 @TeleOp (name = "MainTeleOp")
-public class MainTeleOp extends BlackOp {
+public class MainTeleOp extends LinearOpMode {
 
     ReforgedGamepad driver;
     ReforgedGamepad codriver;
@@ -19,20 +27,36 @@ public class MainTeleOp extends BlackOp {
 
     @CreateOnGo
     DriveTrain dt;
+    private OpenCvCamera camera;
+
 
     private void initialize() {
         driver = new ReforgedGamepad(gamepad1);
         codriver = new ReforgedGamepad(gamepad2);
 
         blueConePipeline = new Camera.BlueConeDetector(telemetry);
-        blueConePipeline.runPipeline();
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
+        //could potentially look at createInternalCamera
+        camera.setPipeline(blueConePipeline);
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                throw new RuntimeException("Error opening camera! Error code " + errorCode);
+            }
+        });
     }
 
 
 
 
     @Override
-    public void go() {
+    public void runOpMode() {
         initialize();
         while (opModeInInit()) {
             if (blueConePipeline.getDetectionState() == Camera.BlueConeDetector.DETECTION_STATE.LEFT) {

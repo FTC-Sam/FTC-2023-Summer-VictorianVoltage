@@ -21,12 +21,12 @@ public class Camera {
         private final Telemetry telemetry;
         Mat mat = new Mat(); // matrix
         final Rect LEFT_ROI = new Rect(
-                new Point(60, 35),
-                new Point(120, 75)); //takes the top left point and bottom right point
+                new Point(1, 1),
+                new Point(319, 239)); //takes the top left point and bottom right point
         final Rect RIGHT_ROI = new Rect(
-                new Point(140, 35),
-                new Point(200, 75));
-        final double PERCENT_COLOR_THRESHOLD = 0.4; // unlike the HSV which determines what is considered our desired color, this decides if we have enough in the frame to actually perform an action
+                new Point(320, 1),
+                new Point(639, 239));
+        final double PERCENT_COLOR_THRESHOLD = 0.3; // unlike the HSV which determines what is considered our desired color, this decides if we have enough in the frame to actually perform an action
         public enum DETECTION_STATE {
             BOTH,
             LEFT,
@@ -63,8 +63,8 @@ public class Camera {
         @Override
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV); // convert input into HSV and store in mat
-            Scalar lowHSV = new Scalar(23, 50, 70);
-            Scalar highHSV = new Scalar(32, 255, 255); //currently set to detect yellow
+            Scalar lowHSV = new Scalar(110, 50, 70);
+            Scalar highHSV = new Scalar(130, 255, 255); //currently set to detect blue
 
             Core.inRange(mat, lowHSV, highHSV, mat); // the stored mat is thresholded into black and white and stored, white is desired color
             Mat left = mat.submat(LEFT_ROI); //extracting ROI by taking the sub matrix (part we want)
