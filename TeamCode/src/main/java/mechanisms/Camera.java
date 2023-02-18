@@ -59,7 +59,7 @@ public class Camera {
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV); // convert input into HSV and store in mat
             Scalar lowHSV = new Scalar(23, 50, 70);
-            Scalar highHSV = new Scalar(32, 255, 255);
+            Scalar highHSV = new Scalar(32, 255, 255); //currently set to detect yellow
 
             Core.inRange(mat, lowHSV, highHSV, mat); // the stored mat is thresholded into black and white and stored, white is desired color
             Mat left = mat.submat(LEFT_ROI); //extracting ROI by taking the sub matrix (part we want)
