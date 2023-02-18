@@ -1,8 +1,8 @@
 package mechanisms;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -18,6 +18,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Camera {
     public static class BlueConeDetector extends OpenCvPipeline {
+        private final Telemetry telemetry;
         Mat mat = new Mat(); // matrix
         final Rect LEFT_ROI = new Rect(
                 new Point(60, 35),
@@ -36,6 +37,10 @@ public class Camera {
 
 
         private OpenCvCamera camera;
+
+        public BlueConeDetector(Telemetry t) {
+            telemetry = t;
+        }
         public void runPipeline() {
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
             camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);

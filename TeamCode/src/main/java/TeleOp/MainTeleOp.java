@@ -24,7 +24,7 @@ public class MainTeleOp extends BlackOp {
         driver = new ReforgedGamepad(gamepad1);
         codriver = new ReforgedGamepad(gamepad2);
 
-        blueConePipeline = new Camera.BlueConeDetector();
+        blueConePipeline = new Camera.BlueConeDetector(telemetry);
         blueConePipeline.runPipeline();
     }
 
