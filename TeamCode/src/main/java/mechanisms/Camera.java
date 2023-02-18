@@ -1,6 +1,7 @@
 package mechanisms;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -18,14 +19,15 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Camera {
     public static class BlueConeDetector extends OpenCvPipeline {
+        private final HardwareMap hardwareMap;
         private final Telemetry telemetry;
         Mat mat = new Mat(); // matrix
         final Rect LEFT_ROI = new Rect(
                 new Point(1, 1),
-                new Point(319, 239)); //takes the top left point and bottom right point
+                new Point(319, 479)); //takes the top left point and bottom right point
         final Rect RIGHT_ROI = new Rect(
                 new Point(320, 1),
-                new Point(639, 239));
+                new Point(639, 479));
         final double PERCENT_COLOR_THRESHOLD = 0.3; // unlike the HSV which determines what is considered our desired color, this decides if we have enough in the frame to actually perform an action
         public enum DETECTION_STATE {
             BOTH,
@@ -38,8 +40,9 @@ public class Camera {
 
         private OpenCvCamera camera;
 
-        public BlueConeDetector(Telemetry t) {
+        public BlueConeDetector(Telemetry t, HardwareMap hM) {
             telemetry = t;
+            hardwareMap = hM;
         }
         public void runPipeline() {
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -49,7 +52,7 @@ public class Camera {
             camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
                 @Override
                 public void onOpened() {
-                    camera.startStreaming(480, 360, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
                 }
 
                 @Override

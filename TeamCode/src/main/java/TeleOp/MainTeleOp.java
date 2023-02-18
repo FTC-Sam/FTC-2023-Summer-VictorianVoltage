@@ -1,18 +1,10 @@
 package TeleOp;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import ftc.rogue.blacksmith.BlackOp;
 import ftc.rogue.blacksmith.Scheduler;
-import ftc.rogue.blacksmith.annotations.CreateOnGo;
 import ftc.rogue.blacksmith.listeners.ReforgedGamepad;
 import mechanisms.Camera;
 import mechanisms.DriveTrain;
@@ -25,31 +17,17 @@ public class MainTeleOp extends LinearOpMode {
     Camera.BlueConeDetector blueConePipeline;
 
 
-    @CreateOnGo
+
     DriveTrain dt;
-    private OpenCvCamera camera;
 
 
     private void initialize() {
         driver = new ReforgedGamepad(gamepad1);
         codriver = new ReforgedGamepad(gamepad2);
 
-        blueConePipeline = new Camera.BlueConeDetector(telemetry);
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
-        //could potentially look at createInternalCamera
-        camera.setPipeline(blueConePipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-                throw new RuntimeException("Error opening camera! Error code " + errorCode);
-            }
-        });
+        blueConePipeline = new Camera.BlueConeDetector(telemetry, hardwareMap);
+        blueConePipeline.runPipeline();
+        dt = new DriveTrain(hardwareMap);
     }
 
 

@@ -1,20 +1,22 @@
 package mechanisms;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import ftc.rogue.blacksmith.listeners.ReforgedGamepad;
 
 public class DriveTrain {
 
     private final DcMotorEx motorFrontLeft, motorBackLeft, motorFrontRight, motorBackRight;
+    private final HardwareMap hardwareMap;
 
 
+    public DriveTrain(HardwareMap hM) {
 
-    public DriveTrain() {
+        hardwareMap = hM;
 
         motorFrontLeft = (DcMotorEx) hardwareMap.dcMotor.get("FL");
         motorBackLeft = (DcMotorEx) hardwareMap.dcMotor.get("BL");
