@@ -4,6 +4,7 @@ package mechanisms;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import ftc.rogue.blacksmith.listeners.ReforgedGamepad;
@@ -12,11 +13,13 @@ public class DriveTrain {
 
     private final DcMotorEx motorFrontLeft, motorBackLeft, motorFrontRight, motorBackRight;
     private final HardwareMap hardwareMap;
+    private final Gamepad gamepad1;
 
 
-    public DriveTrain(HardwareMap hM) {
+    public DriveTrain(HardwareMap hM, Gamepad gamepad) {
 
         hardwareMap = hM;
+        gamepad1 = gamepad;
 
         motorFrontLeft = (DcMotorEx) hardwareMap.dcMotor.get("FL");
         motorBackLeft = (DcMotorEx) hardwareMap.dcMotor.get("BL");
@@ -40,11 +43,11 @@ public class DriveTrain {
 
 
 
-    public void drive(ReforgedGamepad gamepad) {
+    public void drive() {
 
-        double y = -gamepad.left_stick_y.get(); // Remember, this is reversed!
-        double x = gamepad.left_stick_x.get();
-        double rx = gamepad.right_stick_x.get();
+        double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+        double x = gamepad1.left_stick_x;
+        double rx = gamepad1.right_stick_x;
         double frontLeftPower;
         double frontRightPower;
         double backLeftPower;
