@@ -1,5 +1,6 @@
 package TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.outoftheboxrobotics.photoncore.PhotonLynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -15,12 +16,17 @@ public class MainTeleOp extends LinearOpMode {
     private Servo rightServo;
     private Servo leftServo;
     DriveTrain dt;
+    private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
 
     private void initialize() {
+        dashboard.setTelemetryTransmissionInterval(25);
+
         blueConePipeline = new Camera.BlueConeDetector(telemetry, hardwareMap);
         blueConePipeline.runPipeline();
+
         dt = new DriveTrain(hardwareMap, gamepad1);
+
         rightServo = hardwareMap.get(Servo.class, "rightServo");
         leftServo = hardwareMap.get(Servo.class, "leftServo");
     }
