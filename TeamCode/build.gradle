@@ -48,3 +48,16 @@ dependencies {
 repositories {
     maven { url = 'https://jitpack.io' }
 }
+
+repositories {
+    // This line will already be here; you do not need to add it
+    //maven { url = "https://dl.bintray.com/first-tech-challenge/ftcsdk/" }
+    // Add this line
+    maven { url = "https://maven.catboy.camp" }
+}
+
+dependencies {
+    // There should be a bunch of implementation configurations here already
+
+    implementation 'com.spartronics4915.lib:ftc265:2.1.9'
+}
