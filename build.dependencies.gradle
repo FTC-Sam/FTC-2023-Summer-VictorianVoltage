@@ -9,6 +9,7 @@ repositories {
     maven { url = 'https://jitpack.io' }
     maven { url = 'https://maven.brott.dev/' }
     maven { url 'https://jitpack.io' }
+    maven { url 'https://jitpack.com' }
 }
 
 dependencies {
@@ -27,6 +28,6 @@ dependencies {
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.8'
 
     implementation 'com.github.RR-9527:robot-code-v2:0.3.2'
-
+    implementation 'com.github.deltacv:EOCV-Sim:3.3.2'
     implementation 'com.github.Thermal-Equilibrium:homeostasis-FTC:1.0.8'
 }

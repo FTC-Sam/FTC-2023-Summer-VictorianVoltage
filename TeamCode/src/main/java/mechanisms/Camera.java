@@ -10,11 +10,25 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvPipeline;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Camera {
@@ -24,7 +38,7 @@ public class Camera {
         Mat mat = new Mat(); // matrix
         final Rect LEFT_ROI = new Rect(
                 new Point(1, 1),
-                new Point(319, 479)); //takes the top left point and bottom right point
+                new Point(319, 479)); //takes the top left point and bottom right point ** 0,0 origin starts at top right
         final Rect RIGHT_ROI = new Rect(
                 new Point(320, 1),
                 new Point(639, 479));
@@ -151,6 +165,98 @@ public class Camera {
         @Override
         public Mat processFrame(Mat input) {
             return null;
+        }
+    }
+
+
+
+    public static class DistanceEstimator extends OpenCvPipeline{
+        double dist = 0;
+        double focal = focalLength(9.0, 0.6, 23);
+        private OpenCvCamera camera;
+        private HardwareMap hardwareMap;
+        private Telemetry telemetry;
+        public DistanceEstimator(HardwareMap hw, Telemetry tele){
+            this.hardwareMap = hw;
+            this.telemetry = tele;
+        }
+        public void runPipeline() {
+            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
+            //could potentially look at createInternalCamera
+            camera.setPipeline(this);
+            camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                @Override
+                public void onOpened() {
+                    camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+                }
+
+                @Override
+                public void onError(int errorCode) {
+                    throw new RuntimeException("Error opening camera! Error code " + errorCode);
+                }
+            });
+        }
+
+
+        @Override
+        public Mat processFrame(Mat input){
+            try{       //requires try catch as if we don't find contours we get an error
+            Mat end = input; //the frames that will be streamed
+            Mat mat = input; //the frames that are altered to find our info
+
+            Scalar lowHSV = new Scalar(110, 50, 70);
+            Scalar highHSV = new Scalar(130, 255, 255);
+
+            Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2HSV);
+            Core.inRange(mat, lowHSV, highHSV, mat);  // thresholding
+
+            Imgproc.morphologyEx(mat, mat, Imgproc.MORPH_CLOSE, new Mat());
+            Imgproc.blur(mat, mat, new Size(10, 10));// removing false negatives and using gaussian blur
+
+                //finding all the contours in the image
+            ArrayList<MatOfPoint> contours = new ArrayList<>();
+            Mat hierarchy = new Mat();
+            Imgproc.findContours(mat, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+            int largestIndex = 0;
+            int largest = contours.get(0).toArray().length;
+
+            //finding the largest contour form the frame
+            for (int i = 0; i < contours.size(); i++) {
+                int currentSize = contours.get(i).toArray().length;
+                if (currentSize > largest) {
+
+                    largest = currentSize;
+                    largestIndex = i;
+                }
+
+            }
+
+
+            //Draw rectangle on largest contours
+
+            MatOfPoint2f areaPoints = new MatOfPoint2f(contours.get(largestIndex).toArray());
+
+            Rect rect = Imgproc.boundingRect(areaPoints);
+
+            Imgproc.rectangle(end, rect, new Scalar(255, 0, 0));
+            dist = estimateDist(focal, 0.6, rect.width);
+            telemetry.addData("Distance: ", dist);
+            telemetry.addData("pixle width", rect.width);
+            telemetry.update();
+            return end;
+        } catch (IndexOutOfBoundsException e) {
+            telemetry.addData("No objects found", 0);
+        }
+            return input;
+        }
+        //algos
+        public static double focalLength(double measured_dist, double real_width, double width_in_rf_img ){
+            return (width_in_rf_img * measured_dist)/ real_width;
+        }
+        public static double estimateDist(double focalL , double real_width, double width_in_rf_img ){
+            return (focalL*real_width)/ width_in_rf_img;
         }
     }
 }
